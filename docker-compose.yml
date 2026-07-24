@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: civichub
+      POSTGRES_USER: civichub_user
+      POSTGRES_PASSWORD: civichub_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  backend:
+    build:
+      context: ./backend
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_ENGINE=django.db.backends.postgresql
+      - DB_HOST=db
+      - DB_NAME=civichub
+      - DB_USER=civichub_user
+      - DB_PASSWORD=civichub_pass
+      - DB_PORT=5432
+      - REDIS_URL=redis://redis:6379/0
+      - AI_SERVICE_URL=http://ai_service:8001
+    depends_on:
+      - db
+      - redis
+
+  ai_service:
+    build:
+      context: ./ai_service
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./ai_service:/app
+
+volumes:
+  postgres_data:
