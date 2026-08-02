@@ -31,6 +31,7 @@ import heroImg from "@/assets/hero-city.jpg";
 import aiImg from "@/assets/ai-assistant.jpg";
 import mapImg from "@/assets/gis-map.jpg";
 import phoneImg from "@/assets/citizen-services.jpg";
+import { withBasePath } from "../lib/base-path";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -50,9 +51,9 @@ export const Route = createFileRoute("/")({
         content:
           "Unified citizen portal for Indian municipalities. Powered by AI.",
       },
-      { property: "og:url", content: "/" },
+      { property: "og:url", content: withBasePath("/") },
     ],
-    links: [{ rel: "canonical", href: "/" }],
+    links: [{ rel: "canonical", href: withBasePath("/") }],
   }),
   component: HomePage,
 });
